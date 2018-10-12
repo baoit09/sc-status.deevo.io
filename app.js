@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var engine = require('ejs-locals');
 var fsx = require('fs-extra');
+const eventHub = require(__dirname + '/utils/event-hub');
 
 var hostname = 'localhost';
 var port = 3000;
@@ -64,5 +65,7 @@ app.use(function (err, req, res, next) {
     error: {}
   });
 });
+
+eventHub.registerEventHub('org3', 'channel1');
 
 module.exports = app;
