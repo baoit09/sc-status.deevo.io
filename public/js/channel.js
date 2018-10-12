@@ -39,6 +39,10 @@ function hideChannelError() {
 }
 
 function getChannelInfo(channelID) {
+    getPeers(channelID);
+    getOrderers(channelID);
+
+    $('#channel-root-container').show();
     hideChannelError();
 
     $.get(`/api/v1/status/channel/${channelID}`,
@@ -61,5 +65,49 @@ function getChannelInfo(channelID) {
         })
         .fail(function (e) {
             showChannelError(e);
+        })
+}
+
+function getOrderers(channelID) {
+    $.get(`/api/v1/status/channel/${channelID}/orderers`,
+        {},
+        function (result) {
+            $('#orderer-root-container').show();
+            var list = $('#orderer-info');
+            list.html("");
+            $.each(result, function (index, orderer) {
+                let name = orderer.name;
+                let html = `<li class="nav-item active">
+                    <a><i class="fa fa-codepen" style="margin-right:8px"></i> <strong>${name}</strong></a>
+                    </li>`;
+                    list.append(html);
+            })
+            // $(".channel-item").on("click", function () {
+            //     $("#side-menu").find(".active").removeClass("active");
+            //     $(this).addClass("active");
+            //     getChannelInfo(this.id);
+            // });
+        })
+}
+
+function getPeers(channelID) {
+    $.get(`/api/v1/status/channel/${channelID}/peers`,
+        {},
+        function (result) {
+            $('#peer-root-container').show();
+            var list = $('#peer-info');
+            list.html("");
+            $.each(result, function (index, peer) {
+                let name = peer.name;
+                let html = `<li class="nav-item active">
+                    <a><i class="fa fa-codepen" style="margin-right:8px"></i> <strong>${name}</strong></a>
+                    </li>`;
+                    list.append(html);
+            })
+            // $(".channel-item").on("click", function () {
+            //     $("#side-menu").find(".active").removeClass("active");
+            //     $(this).addClass("active");
+            //     getChannelInfo(this.id);
+            // });
         })
 }

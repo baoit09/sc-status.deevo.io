@@ -81,4 +81,38 @@ router.route('/channel/:channel_name')
     });
 // ======================================================
 
+router.route('/channel/:channel_name/orderers')
+    .get(function (req, res, next) {
+        let org = 'org1';
+        let channel_name = req.params.channel_name;
+        return encroll(org)
+            .then(() => {
+                return client.getChannel(channel_name);
+            })
+            .then((channel) => {
+                return res.json(convertObject.convertNodeArray2JSON(channel.getOrderers()));
+            })
+            .catch(err => {
+                if (err) return next(err);
+            });
+    });
+// ======================================================
+
+router.route('/channel/:channel_name/peers')
+    .get(function (req, res, next) {
+        let org = 'org1';
+        let channel_name = req.params.channel_name;
+        return encroll(org)
+            .then(() => {
+                return client.getChannel(channel_name);
+            })
+            .then((channel) => {
+                return res.json(convertObject.convertNodeArray2JSON(channel.getPeers()));
+            })
+            .catch(err => {
+                if (err) return next(err);
+            });
+    });
+// ======================================================
+
 module.exports = router;

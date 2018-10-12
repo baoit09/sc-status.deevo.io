@@ -7,7 +7,7 @@
         <!-- /.col-lg-12 -->
     </div>
     <!-- /.row -->
-    <div class="row">
+    <div id="channel-root-container" class="row" style="display:none">
         <div class="col-lg-12">
             <div class="panel panel-default">
                 <div class="panel-body">
@@ -20,6 +20,34 @@
                         </table>
                     </div>
                     <div id="error-channel-div" class="alert alert-danger" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    <div id="orderer-root-container" class="row" style="display:none">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3>Orderers</h3>
+                    <ul class="nav nav-pills nav-stacked" id="orderer-info">
+                    </ul>
+                    <div id="error-orderer-div" class="alert alert-danger" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    <div id="peer-root-container" class="row" style="display:none">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3>Peers</h3>
+                    <ul class="nav nav-pills nav-stacked" id="peer-info">
+                    </ul>
+                    <div id="error-peer-div" class="alert alert-danger" style="display: none;"></div>
                 </div>
             </div>
         </div>
