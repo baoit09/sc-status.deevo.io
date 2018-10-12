@@ -43,4 +43,42 @@ var router = express.Router();
 router.use(bodyParser.json());
 
 // ======================================================
+router.route('/network')
+    .get(function (req, res, next) {
+        let org = 'org1';
+        return encroll(org)
+            .then(() => {
+                let peers = client.getPeersForOrg();
+                return client.queryChannels(peers[0])
+                    .then(channelQueryResponses => {
+                        return res.json(channelQueryResponses);
+                    }).catch(err => {
+                        if (err) return next(err);
+                    });
+            })
+    });
+// ======================================================
+
+router.route('/channel/:channel_name')
+    .get(function (req, res, next) {
+        let org = 'org1';
+        let channel_name = req.params.channel_name;
+        return encroll(org)
+            .then(() => {
+                return client.getChannel(channel_name);
+            })
+            .then((channel) => {
+                return channel.queryInfo()
+                    .then(queryResponses => {
+                        return res.json(convertObject.convertChannelInfo2JSON(queryResponses));
+                    }).catch(err => {
+                        if (err) return next(err);
+                    });
+            })
+            .catch(err => {
+                if (err) return next(err);
+            });
+    });
+// ======================================================
+
 module.exports = router;
