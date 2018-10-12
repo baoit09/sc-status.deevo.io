@@ -1,0 +1,4 @@
+node_modules
+configs
+.vscode
+public/bower_components
