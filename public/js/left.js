@@ -14,6 +14,10 @@ function getChannels() {
                     <a><i class="fa fa-sitemap" style="margin-right:8px"></i> ${id}</a>
                     </li>`;
                 menu.append(html);
+                if (index === 0) {
+                    $("#side-menu").find(`#${id}`).addClass("active");
+                    getChannelInfo(id);
+                }
             })
             $(".channel-item").on("click", function () {
                 $("#side-menu").find(".active").removeClass("active");
