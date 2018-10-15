@@ -86,9 +86,16 @@ function getOrderers(channelID) {
             $.each(result, function (index, orderer) {
                 let name = orderer.name;
                 let html = `<li class="nav-item active">
-                    <a><i class="fa fa-codepen" style="margin-right:8px"></i> <strong>${name}</strong></a>
+                    <a><i class="fa fa-codepen" style="margin-right:8px"></i> <strong>${name}<span id="orderer-${index}"></span></strong></a>
                     </li>`;
                 list.append(html);
+
+                let org = name.split('.')[1];
+                $.get(`/api/v1/status/org/${org}/channel/${channelID}/orderer/${name}`,
+                    {},
+                    function (stat) {
+                        $(`#orderer-${index}`).text(` - ${stat.status}`);
+                    })
             })
             // $(".channel-item").on("click", function () {
             //     $("#side-menu").find(".active").removeClass("active");
@@ -108,9 +115,15 @@ function getPeers(channelID) {
             $.each(result, function (index, peer) {
                 let name = peer.name;
                 let html = `<li class="nav-item active">
-                    <a><i class="fa fa-codepen" style="margin-right:8px"></i> <strong>${name}</strong></a>
+                    <a><i class="fa fa-codepen" style="margin-right:8px"></i> <strong>${name}<span id="peer-${index}"></span></strong></a>
                     </li>`;
                 list.append(html);
+                let org = name.split('.')[1];
+                $.get(`/api/v1/status/org/${org}/channel/${channelID}/peer/${name}`,
+                    {},
+                    function (stat) {
+                        $(`#peer-${index}`).text(` - ${stat.status}`);
+                    })
             })
             // $(".channel-item").on("click", function () {
             //     $("#side-menu").find(".active").removeClass("active");
