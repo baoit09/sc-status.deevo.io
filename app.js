@@ -6,7 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var engine = require('ejs-locals');
 var fsx = require('fs-extra');
-const eventHub = require(__dirname + '/utils/event-hub');
+const BlockListener = require(__dirname + '/utils/event-hub');
 const cron = require("node-cron");
 
 var hostname = 'localhost';
@@ -67,11 +67,11 @@ app.use(function (err, req, res, next) {
   });
 });
 
-eventHub.registerEventAllHubs();
+const blockListeners = new BlockListener()
 
 cron.schedule("* * * * *", function () {
   console.log("running a task every minute");
-  eventHub.registerEventAllHubs();
+  blockListeners.restartEventHubs();
 });
 
 module.exports = app;

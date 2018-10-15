@@ -45,7 +45,7 @@ function encroll(org) {
 
 function registerEventHub(org, channelID) {
     const collectionName = `latest-block-${channelID}`;
-    mongo.findByID(latestBlockID, collectionName)
+    return mongo.findByID(latestBlockID, collectionName)
         .then((doc) => {
             if (doc === null || doc === undefined) {
                 doc = {
@@ -58,12 +58,14 @@ function registerEventHub(org, channelID) {
         })
         .then((doc) => {
             console.log('doc ' + JSON.stringify(doc));
-            encroll(org)
+            return encroll(org)
                 .then(() => {
                     return client.getChannel(channelID);
                 })
                 .then((channel) => {
-                    let eventHub = channel.newChannelEventHub(channel.getPeers()[0]);
+                    let peer = channel.getPeers()[0];
+                    // peer._request_timeout = 10000;
+                    let eventHub = channel.newChannelEventHub(peer);
 
                     let block_reg = eventHub.registerBlockEvent((block) => {
                         console.log(`Successfully received the block #${block.header.number} from channel ${channelID}`);
@@ -73,9 +75,10 @@ function registerEventHub(org, channelID) {
                     }, (error) => {
                         console.log('Failed to receive the block event ::' + error);
                     },
-                        { startBlock: parseInt(doc.num) + 1, unregister: true, disconnect: true }
+                        { startBlock: parseInt(doc.num), unregister: true, disconnect: true } // get the latest block to avod timeout
                     );
                     eventHub.connect(true);
+                    return [eventHub, block_reg];
                 })
                 .catch(err => {
                     console.log(err);
@@ -83,18 +86,35 @@ function registerEventHub(org, channelID) {
         })
 }
 
-module.exports.registerEventHub = registerEventHub
+class BlockListener {
+    constructor() {
+        this._hubs = {}
+        this._block_reg = {}
 
-function registerEventAllHubs() {
-    const rl = readline.createInterface({
-        input: fs.createReadStream(__dirname + '/../configs/fabric-network-config/channels.txt'),
-        crlfDelay: Infinity
-    });
+        const rl = readline.createInterface({
+            input: fs.createReadStream(__dirname + '/../configs/fabric-network-config/channels.txt'),
+            crlfDelay: Infinity
+        });
+    
+        rl.on('line', (channelID) => {
+            registerEventHub('org1', channelID)
+            .then((results) => {
+                this._hubs[`${channelID}`] = results[0];
+                this._block_reg[`${channelID}`] = results[1];
+            });
+            console.log(channelID);
+        });
+    }
 
-    rl.on('line', (channelID) => {
-        registerEventHub('org1', channelID);
-        console.log(channelID);
-    });
+    restartEventHubs() {
+        for (let channel in this._hubs) {
+            console.log(`${channel}, connected ${this._hubs[channel].isconnected()}`);
+            // console.log(this._block_reg[channel]);
+            if (!this._hubs[channel].isconnected()) {
+                this._hubs[channel].connect(true);
+            }
+        }
+    }
 }
 
-module.exports.registerEventAllHubs = registerEventAllHubs
+module.exports = BlockListener;
