@@ -20,7 +20,8 @@
     "request": "^2.88.0",
     "serve-favicon": "^2.5.0",
     "utf8": "^3.0.0",
-    "mongodb": "3.1.8"
+    "mongodb": "3.1.8",
+    "node-cron": "2.0.3"
   },
   "devDependencies": {
     "@types/bytebuffer": "^5.0.37",

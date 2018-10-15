@@ -73,7 +73,7 @@ function registerEventHub(org, channelID) {
                     }, (error) => {
                         console.log('Failed to receive the block event ::' + error);
                     },
-                        { startBlock: parseInt(doc.num) + 1, unregister: false, disconnect: false }
+                        { startBlock: parseInt(doc.num) + 1, unregister: true, disconnect: true }
                     );
                     eventHub.connect(true);
                 })

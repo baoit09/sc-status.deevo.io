@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 var engine = require('ejs-locals');
 var fsx = require('fs-extra');
 const eventHub = require(__dirname + '/utils/event-hub');
+const cron = require("node-cron");
 
 var hostname = 'localhost';
 var port = 3000;
@@ -67,5 +68,10 @@ app.use(function (err, req, res, next) {
 });
 
 eventHub.registerEventAllHubs();
+
+cron.schedule("* * * * *", function () {
+  console.log("running a task every minute");
+  eventHub.registerEventAllHubs();
+});
 
 module.exports = app;
