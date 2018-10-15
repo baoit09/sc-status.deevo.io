@@ -66,6 +66,6 @@ app.use(function (err, req, res, next) {
   });
 });
 
-eventHub.registerEventHub('org3', 'channel1');
+eventHub.registerEventAllHubs();
 
 module.exports = app;

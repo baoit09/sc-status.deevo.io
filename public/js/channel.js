@@ -52,15 +52,23 @@ function getChannelInfo(channelID) {
             info.html("");
             info.append(`<tr>
                     <th>Block count</th>
-                    <td>${result.count}</td>
+                    <td>${result.info.count}</td>
+                    </tr>`);
+            info.append(`<tr>
+                    <th>Total transactions count</th>
+                    <td>${result.tx_count}</td>
+                    </tr>`);
+            info.append(`<tr>
+                    <th>Today transactions count</th>
+                    <td>${result.tx_count_today}</td>
                     </tr>`);
             info.append(`<tr>
                     <th>Current Block Hash</th>
-                    <td>${result.currentBlockHash}</td>
+                    <td>${result.info.currentBlockHash}</td>
                     </tr>`);
             info.append(`<tr>
                     <th>Previous Block Hash</th>
-                    <td>${result.previousBlockHash}</td>
+                    <td>${result.info.previousBlockHash}</td>
                     </tr>`);
         })
         .fail(function (e) {
@@ -80,7 +88,7 @@ function getOrderers(channelID) {
                 let html = `<li class="nav-item active">
                     <a><i class="fa fa-codepen" style="margin-right:8px"></i> <strong>${name}</strong></a>
                     </li>`;
-                    list.append(html);
+                list.append(html);
             })
             // $(".channel-item").on("click", function () {
             //     $("#side-menu").find(".active").removeClass("active");
@@ -102,7 +110,7 @@ function getPeers(channelID) {
                 let html = `<li class="nav-item active">
                     <a><i class="fa fa-codepen" style="margin-right:8px"></i> <strong>${name}</strong></a>
                     </li>`;
-                    list.append(html);
+                list.append(html);
             })
             // $(".channel-item").on("click", function () {
             //     $("#side-menu").find(".active").removeClass("active");

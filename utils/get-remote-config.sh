@@ -63,6 +63,10 @@ if [ -f ${CONFIG_PATH}/fabric-network-config/connection-profile.yaml ]; then
 	rm -f ${CONFIG_PATH}/fabric-network-config/connection-profile.yaml
 fi
 
+for channel in $c; do
+	echo "${channel}" >>${CONFIG_PATH}/fabric-network-config/channels.txt
+done
+
 for org in $ORGS; do
 	echo "# The name of connection profile
 name: \"${org} Client\"

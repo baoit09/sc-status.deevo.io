@@ -1,6 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 const convertObject = require('../utils/convertObject');
+const mongo = require(__dirname + '/../utils/mongo');
 
 var Client = require('fabric-client');
 var client = Client.loadFromConfig('configs/fabric-network-config/connection-profile.yaml');
@@ -68,12 +69,24 @@ router.route('/channel/:channel_name')
                 return client.getChannel(channel_name);
             })
             .then((channel) => {
-                return channel.queryInfo()
+                let channelInfo = channel.queryInfo()
                     .then(queryResponses => {
-                        return res.json(convertObject.convertChannelInfo2JSON(queryResponses));
+                        return convertObject.convertChannelInfo2JSON(queryResponses);
                     }).catch(err => {
                         if (err) return next(err);
                     });
+                let allTransactionCount = mongo.countAllTransactionInChannel(channel_name);
+                let todayTransactionCount = mongo.countTodayTransactionInChannel(channel_name);
+
+                return Promise.all([channelInfo, allTransactionCount, todayTransactionCount]);
+            })
+            .then((results) => {
+                let response = {
+                    info: results[0],
+                    tx_count: results[1],
+                    tx_count_today: results[2]
+                }
+                return res.json(response)
             })
             .catch(err => {
                 if (err) return next(err);

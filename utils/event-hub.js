@@ -4,6 +4,9 @@ var Client = require('fabric-client');
 var client = Client.loadFromConfig('configs/fabric-network-config/connection-profile.yaml');
 const mongo = require(__dirname + '/mongo');
 
+const readline = require('readline');
+const fs = require('fs');
+
 const latestBlockID = 'latest_block_id';
 
 // ======================================================
@@ -41,7 +44,7 @@ function encroll(org) {
 }
 
 function registerEventHub(org, channelID) {
-    const collectionName = 'blocks';
+    const collectionName = `latest-block-${channelID}`;
     mongo.findByID(latestBlockID, collectionName)
         .then((doc) => {
             if (doc === null || doc === undefined) {
@@ -63,10 +66,10 @@ function registerEventHub(org, channelID) {
                     let eventHub = channel.newChannelEventHub(channel.getPeers()[0]);
 
                     let block_reg = eventHub.registerBlockEvent((block) => {
-                        console.log('Successfully received the block event ' + block.header.number);
+                        console.log(`Successfully received the block #${block.header.number} from channel ${channelID}`);
                         doc.num = block.header.number;
-                        mongo.update({ _id: latestBlockID }, {num: block.header.number}, collectionName);
-                        mongo.insertTransactionFromBlock(block);
+                        mongo.update({ _id: latestBlockID }, { num: block.header.number }, collectionName);
+                        mongo.insertTransactionFromBlock(block, channelID);
                     }, (error) => {
                         console.log('Failed to receive the block event ::' + error);
                     },
@@ -81,3 +84,17 @@ function registerEventHub(org, channelID) {
 }
 
 module.exports.registerEventHub = registerEventHub
+
+function registerEventAllHubs() {
+    const rl = readline.createInterface({
+        input: fs.createReadStream(__dirname + '/../configs/fabric-network-config/channels.txt'),
+        crlfDelay: Infinity
+    });
+
+    rl.on('line', (channelID) => {
+        registerEventHub('org1', channelID);
+        console.log(channelID);
+    });
+}
+
+module.exports.registerEventAllHubs = registerEventAllHubs
