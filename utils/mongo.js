@@ -8,16 +8,16 @@ const assert = require('assert');
 const url = 'mongodb://localhost:27017';
 const dbName = 'network';
 
-function insert(doc, collectionName) {
+function save(doc, collectionName) {
     return MongoClient.connect(url)                             // connect to mongo server
         .then(client => client.db(dbName)                       // get mongoClient object and connect to artbot db
             .collection(collectionName)                         // connect to the artistdb collection
-            .insertOne(doc)                                     // perform your query
-            .then(result => (client.close(), result.ops[0])))   // close db and return array from query result
+            .updateOne({ _id: doc._id }, { $set: doc }, {upsert: true})                                     // perform your query
+            .then(result => (client.close(), result)))   // close db and return array from query result
         .catch(e => console.log(e));
 }
 
-module.exports.insert = insert;
+module.exports.save = save;
 
 function update(filter, newValues, collectionName) {
     return MongoClient.connect(url)                         // connect to mongo server
@@ -41,7 +41,7 @@ function findByID(id, collectionName) {
 
 module.exports.findByID = findByID;
 
-function insertTransactionFromBlock(block, channelID) {
+function saveTransactionFromBlock(block, channelID) {
     let number = block.header.number;
     for (let data of block.data.data) {
         let tx_id = data.payload.header.channel_header.tx_id;
@@ -59,11 +59,11 @@ function insertTransactionFromBlock(block, channelID) {
             tx_id: tx_id,
             time: unix
         }
-        insert(doc, channelID);
+        save(doc, channelID);
     }
 }
 
-module.exports.insertTransactionFromBlock = insertTransactionFromBlock;
+module.exports.saveTransactionFromBlock = saveTransactionFromBlock;
 
 function countAllTransactionInChannel(channelID) {
 

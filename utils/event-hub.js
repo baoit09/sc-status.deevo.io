@@ -69,7 +69,7 @@ function registerEventHub(org, channelID) {
                         console.log(`Successfully received the block #${block.header.number} from channel ${channelID}`);
                         doc.num = block.header.number;
                         mongo.update({ _id: latestBlockID }, { num: block.header.number }, collectionName);
-                        mongo.insertTransactionFromBlock(block, channelID);
+                        mongo.saveTransactionFromBlock(block, channelID);
                     }, (error) => {
                         console.log('Failed to receive the block event ::' + error);
                     },
