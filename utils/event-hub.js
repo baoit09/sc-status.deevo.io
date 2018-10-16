@@ -17,7 +17,7 @@ function registerEventHub(org, channelID) {
             if (doc === null || doc === undefined) {
                 doc = {
                     _id: latestBlockID,
-                    num: -1
+                    num: 0
                 };
                 return mongo.insert(doc, collectionName);
             }
