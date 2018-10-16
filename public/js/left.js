@@ -16,13 +16,13 @@ function getChannels() {
                 menu.append(html);
                 if (index === 0) {
                     $("#side-menu").find(`#${id}`).addClass("active");
-                    getChannelInfo(id);
+                    getChannelAndNodesInfo(id);
                 }
             })
             $(".channel-item").on("click", function () {
                 $("#side-menu").find(".active").removeClass("active");
                 $(this).addClass("active");
-                getChannelInfo(this.id);
+                getChannelAndNodesInfo(this.id);
             });
         })
 }

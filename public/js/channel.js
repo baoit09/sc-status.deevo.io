@@ -1,5 +1,6 @@
 $(document).ready(function () {
-    // getChannelInfo();
+    var c_id = null;
+    var getChannelInterval = setInterval(getChannelInfo, 30000);
 });
 
 function getErrorMessage(error) {
@@ -38,14 +39,23 @@ function hideChannelError() {
     info.hide();
 }
 
-function getChannelInfo(channelID) {
+function getChannelAndNodesInfo(channelID) {
     getPeers(channelID);
     getOrderers(channelID);
+    c_id = channelID;
+    getChannelInfo()
+}
 
+function getChannelInfo() {
+    if (c_id === null) {
+        console.log('empty channel ID');
+        return;
+    }
+    console.log(`get channel ${c_id}`);
     $('#channel-root-container').show();
     hideChannelError();
 
-    $.get(`/api/v1/status/channel/${channelID}`,
+    $.get(`/api/v1/status/channel/${c_id}`,
         {},
         function (result) {
             var info = $('#info');
