@@ -4,6 +4,10 @@ $(document).ready(function () {
 });
 
 function getErrorMessage(error) {
+    if (error === null || error === undefined) {
+        return 'Could not get reponse!';
+    }
+
     const messageRe = /(message:.*\)<)/;
     const headerRe = /(<h1>(.|\n)*?<\/h1>)/;
 
