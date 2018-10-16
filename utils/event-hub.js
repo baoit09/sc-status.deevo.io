@@ -19,7 +19,7 @@ function registerEventHub(org, channelID) {
                     _id: latestBlockID,
                     num: 0
                 };
-                return mongo.insert(doc, collectionName);
+                return mongo.save(doc, collectionName);
             }
             return doc;
         })

@@ -12,8 +12,15 @@ function save(doc, collectionName) {
     return MongoClient.connect(url)                             // connect to mongo server
         .then(client => client.db(dbName)                       // get mongoClient object and connect to artbot db
             .collection(collectionName)                         // connect to the artistdb collection
-            .updateOne({ _id: doc._id }, { $set: doc }, {upsert: true})                                     // perform your query
-            .then(result => (client.close(), result)))   // close db and return array from query result
+            .updateOne({ _id: doc._id }, { $set: doc }, { upsert: true })                                     // perform your query
+            .then(result => {
+                client.close();
+                if (result.result.ok === 1) {
+                    return doc;
+                }
+                console.log(result.result);
+                throw new Error(`save document ${doc._id} failed`);
+            }))   // close db and return array from query result
         .catch(e => console.log(e));
 }
 
