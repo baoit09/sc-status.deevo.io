@@ -11,7 +11,7 @@ function getChannels() {
             $.each(result.channels, function (index, channel) {
                 let id = channel.channel_id;
                 let html = `<li class="channel-item nav-item" id="${id}">
-                    <a><i class="fa fa-sitemap" style="margin-right:8px"></i> ${id}</a>
+                    <a class="btn"><i class="fa fa-sitemap" style="margin-right:8px"></i> ${id}</a>
                     </li>`;
                 menu.append(html);
                 if (index === 0) {
