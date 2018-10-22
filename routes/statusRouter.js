@@ -20,7 +20,7 @@ router.route('/network')
                 let peers = client.getPeersForOrg();
                 return client.queryChannels(peers[0])
                     .then(channelQueryResponses => {
-                        return res.json(channelQueryResponses);
+                        return res.json(convertObject.convertChannelArray2JSON(channelQueryResponses));
                     }).catch(err => {
                         if (err) return next(err);
                     });
@@ -28,13 +28,13 @@ router.route('/network')
     });
 // ======================================================
 
-router.route('/channel/:channel_name')
+router.route('/channel/:channel_id')
     .get(function (req, res, next) {
         let org = 'org1';
-        let channel_name = req.params.channel_name;
+        let channel_id = req.params.channel_id;
         return fabricHelper.encroll(org)
             .then((client) => {
-                return client.getChannel(channel_name);
+                return client.getChannel(channel_id);
             })
             .then((channel) => {
                 let channelInfo = channel.queryInfo()
@@ -43,8 +43,8 @@ router.route('/channel/:channel_name')
                     }).catch(err => {
                         if (err) return next(err);
                     });
-                let allTransactionCount = mongo.countAllTransactionInChannel(channel_name);
-                let todayTransactionCount = mongo.countTodayTransactionInChannel(channel_name);
+                let allTransactionCount = mongo.countAllTransactionInChannel(channel_id);
+                let todayTransactionCount = mongo.countTodayTransactionInChannel(channel_id);
 
                 return Promise.all([channelInfo, allTransactionCount, todayTransactionCount]);
             })
@@ -62,13 +62,13 @@ router.route('/channel/:channel_name')
     });
 // ======================================================
 
-router.route('/channel/:channel_name/orderers')
+router.route('/channel/:channel_id/orderers')
     .get(function (req, res, next) {
         let org = 'org1';
-        let channel_name = req.params.channel_name;
+        let channel_id = req.params.channel_id;
         return fabricHelper.encroll(org)
             .then((client) => {
-                return client.getChannel(channel_name);
+                return client.getChannel(channel_id);
             })
             .then((channel) => {
                 return res.json(convertObject.convertNodeArray2JSON(channel.getOrderers()));
@@ -79,13 +79,13 @@ router.route('/channel/:channel_name/orderers')
     });
 // ======================================================
 
-router.route('/channel/:channel_name/peers')
+router.route('/channel/:channel_id/peers')
     .get(function (req, res, next) {
         let org = 'org1';
-        let channel_name = req.params.channel_name;
+        let channel_id = req.params.channel_id;
         return fabricHelper.encroll(org)
             .then((client) => {
-                return client.getChannel(channel_name);
+                return client.getChannel(channel_id);
             })
             .then((channel) => {
                 return res.json(convertObject.convertNodeArray2JSON(channel.getPeers()));

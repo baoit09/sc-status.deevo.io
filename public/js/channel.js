@@ -99,8 +99,8 @@ function getOrderers(channelID) {
             list.html("");
             $.each(result, function (index, orderer) {
                 let name = orderer.name;
-                let html = `<li class="nav-item active">
-                    <a><i class="fa fa-codepen" style="margin-right:8px"></i> <strong>${name}<span id="orderer-${index}"></span></strong></a>
+                let html = `<li class="list-group-item">
+                    <a><i class="fa fa-codepen" style="margin-right:8px"></i> <strong>${name}<span id="orderer-${index}"></span></strong></a><div id="orderer-status-${index}"></div>
                     </li>`;
                 list.append(html);
 
@@ -109,6 +109,10 @@ function getOrderers(channelID) {
                     {},
                     function (stat) {
                         $(`#orderer-${index}`).text(` - ${stat.status}`);
+                        let statusDot = $(`#orderer-status-${index}`);
+                        statusDot.removeClass();
+                        statusDot.addClass(getStatusClass(stat.status));
+                        // statusDot.addClass('blink');
                     })
             })
             // $(".channel-item").on("click", function () {
@@ -128,8 +132,8 @@ function getPeers(channelID) {
             list.html("");
             $.each(result, function (index, peer) {
                 let name = peer.name;
-                let html = `<li class="nav-item active">
-                    <a><i class="fa fa-codepen" style="margin-right:8px"></i> <strong>${name}<span id="peer-${index}"></span></strong></a>
+                let html = `<li class="list-group-item">
+                    <a><i class="fa fa-codepen" style="margin-right:8px"></i> <strong>${name}<span id="peer-${index}"></span></strong></a><div id="peer-status-${index}"></div>
                     </li>`;
                 list.append(html);
                 let org = name.split('.')[1];
@@ -137,6 +141,10 @@ function getPeers(channelID) {
                     {},
                     function (stat) {
                         $(`#peer-${index}`).text(` - ${stat.status}`);
+                        let statusDot = $(`#peer-status-${index}`);
+                        statusDot.removeClass();
+                        statusDot.addClass(getStatusClass(stat.status));
+                        // statusDot.addClass('blink');
                     })
             })
             // $(".channel-item").on("click", function () {
@@ -145,4 +153,12 @@ function getPeers(channelID) {
             //     getChannelInfo(this.id);
             // });
         })
+}
+
+function getStatusClass(status) {
+    switch (status) {
+        case 'RUNNING': return `running-circle`;
+        case 'DOWN': return `stopped-circle`;
+        default: return `starting-circle`;
+    }
 }

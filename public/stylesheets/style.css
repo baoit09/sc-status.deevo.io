@@ -1,8 +1,55 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+.navbar-header {
+  padding: 10px 20px;
+  font-weight: bold;
+  font-size: 16pt;
+  color: #777777;
 }
 
-a {
-  color: #00B7FF;
+.navbar{
+  min-height: 70px !important;
+}
+
+.running-circle {
+  width: 20px;
+  height: 20px;
+  padding:0;
+  border-radius: 50%;
+  background: forestgreen;
+  float: right;
+  vertical-align: middle;
+}
+
+.starting-circle {
+  width: 20px;
+  height: 20px;
+  padding:0;
+  border-radius: 50%;
+  background: goldenrod;
+  float: right;
+  vertical-align: middle;
+}
+
+.stopped-circle {
+  width: 20px;
+  height: 20px;
+  padding:0;
+  border-radius: 50%;
+  background: darkred;
+  float: right;
+  vertical-align: middle;
+}
+
+.blink {
+  animation: blink-animation 1s steps(5, start) infinite;
+  -webkit-animation: blink-animation 1s steps(5, start) infinite;
+}
+@keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
+}
+@-webkit-keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
 }
