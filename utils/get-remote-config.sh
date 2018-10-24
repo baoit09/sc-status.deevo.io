@@ -44,6 +44,8 @@ rm -rf ${CONFIG_PATH}/crypto-config/*
 rm -rf ${CONFIG_PATH}/fabric-network-config/*
 mkdir -p ${TMP_CONFIG_PATH}
 rm -rf ${TMP_CONFIG_PATH}/*
+rm -rf /tmp/hfc-cvs
+rm -rf /tmp/hfc-kvs
 echo "get from server ${IP}..."
 scp -i ${k} -r ubuntu@${IP}:/home/ubuntu/hyperledgerconfig/data/* ${TMP_CONFIG_PATH}/
 echo "done..."
