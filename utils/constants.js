@@ -23,7 +23,7 @@ module.exports.ObjectTypes.Supplychain = 'supplychain';
 // Deevo's test net
 module.exports.ChannelDict = {
     mychannel: 'AimThaiFruit Channel',
-    channel1: 'DEEVO Channel'
+    channel1: 'Lina Channel'
 }
 module.exports.ChannelName = 'mychannel'
 module.exports.ChainCodeId = 'supplychain'
