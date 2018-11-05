@@ -1,7 +1,11 @@
 const appRoot = require('app-root-path');
 const fabricHelper = require(__dirname + '/../fabricClient/fabricHelper');
-const grpc = require(`${appRoot}/node_modules/grpc`);
+const client_utils = require(`${appRoot}/node_modules/fabric-client/lib/client-utils`);
+const grpc = require(`grpc`);
 
+const _commonProto = grpc.load(
+    `${appRoot}/node_modules/fabric-client/lib/protos/common/common.proto`
+).common;
 const _serviceProto = grpc.load(
     `${appRoot}/node_modules/fabric-client/lib/protos/peer/admin.proto`
 ).protos;
@@ -9,11 +13,44 @@ const _serviceProto = grpc.load(
 function getPeerStatus(org, channelID, name) {
     return fabricHelper.encroll(org)
         .then((client) => {
-            return client.getPeersForOrgOnChannel(channelID);
-        }).then((peers) => {
+            const channel = client.getChannel(channelID);
+            const signer = client._adminSigningIdentity;
+            const txId = client.newTransactionID(true);
+            // build the header for use with the seekInfo payload
+            const seekInfoHeader = client_utils.buildChannelHeader(
+                _commonProto.HeaderType.PEER_ADMIN_OPERATION,
+                channel._name,
+                txId.getTransactionID(),
+                channel._initial_epoch,
+                null,
+                client_utils.buildCurrentTimestamp(),
+                channel._clientContext.getClientCertHash()
+            );
+
+            const seekHeader = client_utils.buildHeader(
+                signer,
+                seekInfoHeader,
+                txId.getNonce()
+            );
+
+            const seekPayload = new _commonProto.Payload();
+            seekPayload.setHeader(seekHeader);
+            const seekPayloadBytes = seekPayload.toBuffer();
+            const sig = signer.sign(seekPayloadBytes);
+            const signature = Buffer.from(sig);
+
+            const envelope = {
+                signature,
+                payload: seekPayloadBytes
+            };
+            return {
+                peers: client.getPeersForOrgOnChannel(channelID),
+                envelope: envelope
+            }
+        }).then((result) => {
             var peer = null;
 
-            for (let p of peers) {
+            for (let p of result.peers) {
                 console.log(`node ${p.getName()}`);
                 if (p.getName() === name) {
                     peer = p;
@@ -23,7 +60,7 @@ function getPeerStatus(org, channelID, name) {
             if (peer === null) {
                 throw new Error(`Can not find peer ${name}`);
             }
-            return getStatus(peer);
+            return getStatus(peer, result.envelope);
         })
 }
 
@@ -72,7 +109,7 @@ function getOrdererStatus(org, channelID, name) {
 
 module.exports.getOrdererStatus = getOrdererStatus;
 
-function getStatus(node) {
+function getStatus(node, envelope) {
     endorserClient = new _serviceProto.Admin(
         node._endpoint.addr,
         node._endpoint.creds,
@@ -87,7 +124,7 @@ function getStatus(node) {
             return reject(new Error('REQUEST_TIMEOUT'));
         }, rto);
 
-        endorserClient.GetStatus({}, (err, serverStatus) => {
+        endorserClient.GetStatus(envelope, (err, serverStatus) => {
             clearTimeout(send_timeout);
             let server_hostname;
             if (node._options['grpc.default_authority']) {
