@@ -1,4 +1,4 @@
-# network-status-service
+# Network Status Service
 # Pre-requisites
 - NodeJS 8.X
   - curl -sL https://deb.nodesource.com/setup_8.x -o nodesource_setup.sh
@@ -10,7 +10,7 @@
 1. sudo apt-get install mongodb
 2. sudo service mongod start
 3. clone this repo from github
-4. cd to network-status-service
+4. cd to sc-status.deevo.io
 5. run: npm install
 6. run: utils/get-remote-config.sh with appropriate parameters
 7. run: npm start
