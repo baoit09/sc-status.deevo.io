@@ -179,4 +179,4 @@ for org in $ORGS; do
     caName: rca.${org}.deevo.io" >>${CONFIG_PATH}/fabric-network-config/connection-profile.yaml
 done
 
-# To run: ./get-remote-config.sh -d ~/Working/Deevo/network-status-service/configs -t /tmp/test-net -p 54.169.140.0 -k ~/Working/Deevo/pem/dev-full-rights.pem -g "org0 org1 org2 org3 org4 org5"
+# ./utils/get-remote-config.sh -d /home/ubuntu/deevo/sc-status.deevo.io/configs -t /tmp/status -p x.x.x.x -k /var/ssh-keys/dev-full-rights.pem -g "org0 org1 org2 org3 org4 org5" -c "deevochannel aimthaichannel"
