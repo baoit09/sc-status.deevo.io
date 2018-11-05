@@ -54,12 +54,12 @@ echo "copy to config folder"
 cp -R ${TMP_CONFIG_PATH}/* ${CONFIG_PATH}/crypto-config/
 
 for org in $ORGS; do
-	KEYFILE=''
-	for entry in $(ls ${CONFIG_PATH}/crypto-config/orgs/${org}/admin/msp/keystore/); do
-		KEYFILE=${entry}
-	done
-	cat ${CONFIG_PATH}/crypto-config/orgs/${org}/admin/msp/keystore/${KEYFILE} >${CONFIG_PATH}/crypto-config/orgs/${org}/admin/msp/keystore/key.pem
-	rm ${CONFIG_PATH}/crypto-config/orgs/${org}/admin/msp/keystore/${KEYFILE}
+	if [ -f ${CONFIG_PATH}/crypto-config/orgs/${org}/admin/tls/client.key ]; then
+		mv ${CONFIG_PATH}/crypto-config/orgs/${org}/admin/tls/client.key ${CONFIG_PATH}/crypto-config/orgs/${org}/admin/tls/server.key
+	fi
+	if [ -f ${CONFIG_PATH}/crypto-config/orgs/${org}/admin/tls/client.crt ]; then
+		mv ${CONFIG_PATH}/crypto-config/orgs/${org}/admin/tls/client.crt ${CONFIG_PATH}/crypto-config/orgs/${org}/admin/tls/server.crt
+	fi
 done
 if [ -f ${CONFIG_PATH}/fabric-network-config/connection-profile.yaml ]; then
 	rm -f ${CONFIG_PATH}/fabric-network-config/connection-profile.yaml
@@ -112,11 +112,11 @@ for channel in $c; do
 	echo "
   ${channel}: # name of channel
     orderers:
-      - orderer0.org0.deevo.com
+      - orderer1.org0.deevo.io
     peers:" >>${CONFIG_PATH}/fabric-network-config/connection-profile.yaml
 	for org in $ORGS; do
 		if [ "${org}" != "org0" ]; then
-			echo "      peer0.${org}.deevo.com:
+			echo "      peer1.${org}.deevo.io:
         endorsingPeer: true
         chaincodeQuery: true
         ledgerQuery: true
@@ -131,52 +131,52 @@ for org in $ORGS; do
 	echo "  ${org}:
     mspid: ${org}MSP
     peers: 
-      - peer0.${org}.deevo.com
+      - peer1.${org}.deevo.io
     certificateAuthorities:
-      - rca.${org}.deevo.com
+      - rca.${org}.deevo.io
     adminPrivateKey:
-      path: configs/crypto-config/orgs/${org}/admin/msp/keystore/key.pem
+      path: configs/crypto-config/orgs/${org}/admin/tls/server.key
     signedCert:
-      path: configs/crypto-config/orgs/${org}/admin/msp/signcerts/cert.pem" >>${CONFIG_PATH}/fabric-network-config/connection-profile.yaml
+      path: configs/crypto-config/orgs/${org}/admin/tls/server.crt" >>${CONFIG_PATH}/fabric-network-config/connection-profile.yaml
 done
 echo "
 orderers:
-  orderer0.org0.deevo.com:
-    url: grpcs://orderer0.org0.deevo.com:7050
+  orderer1.org0.deevo.io:
+    url: grpcs://orderer1.org0.deevo.io:7050
     grpcOptions:
-      ssl-target-name-override: orderer0.org0.deevo.com
+      ssl-target-name-override: orderer1.org0.deevo.io
       grpc-keepalive-timeout-ms: 3000
       grpc.keepalive_time_ms: 360000
       grpc-max-send-message-length: 10485760
       grpc-max-receive-message-length: 10485760
     tlsCACerts:
-      path: configs/crypto-config/orderer/msp/tlscacerts/rca-org0-deevo-com-7054.pem
+      path: configs/crypto-config/orgs/org0/msp/tlscacerts/tls-rca-org0-deevo-io-7054.pem
 peers:" >>${CONFIG_PATH}/fabric-network-config/connection-profile.yaml
 for org in $ORGS; do
 	if [ "${org}" != "org0" ]; then
-		echo "  peer0.${org}.deevo.com:
-    url: grpcs://peer0.${org}.deevo.com:7051
-    eventUrl: grpcs://peer0.${org}.deevo.com:7053
+		echo "  peer1.${org}.deevo.io:
+    url: grpcs://peer1.${org}.deevo.io:7051
+    eventUrl: grpcs://peer1.${org}.deevo.io:7053
     grpcOptions:
-      ssl-target-name-override: peer0.${org}.deevo.com
+      ssl-target-name-override: peer1.${org}.deevo.io
       grpc.keepalive_time_ms: 600000
     tlsCACerts:
-      path: configs/crypto-config/peer0.${org}.deevo.com/msp/tlscacerts/rca-${org}-deevo-com-7054.pem" >>${CONFIG_PATH}/fabric-network-config/connection-profile.yaml
+      path: configs/crypto-config/orgs/${org}/msp/tlscacerts/tls-rca-${org}-deevo-io-7054.pem" >>${CONFIG_PATH}/fabric-network-config/connection-profile.yaml
 	fi
 done
 echo "
 certificateAuthorities:" >>${CONFIG_PATH}/fabric-network-config/connection-profile.yaml
 for org in $ORGS; do
-	echo "  rca.${org}.deevo.com:
-    url: https://rca.${org}.deevo.com:7054
+	echo "  rca.${org}.deevo.io:
+    url: https://rca.${org}.deevo.io:7054
     httpOptions:
       verify: false
     tlsCACerts:
-      path: configs/crypto-config/${org}-ca-cert.pem
+      path: configs/crypto-config/ca/tls.rca.${org}.deevo.io.pem
     registrar:
       - enrollId: rca-${org}-admin
         enrollSecret: rca-${org}-adminpw
-    caName: rca.${org}.deevo.com" >>${CONFIG_PATH}/fabric-network-config/connection-profile.yaml
+    caName: rca.${org}.deevo.io" >>${CONFIG_PATH}/fabric-network-config/connection-profile.yaml
 done
 
 # To run: ./get-remote-config.sh -d ~/Working/Deevo/network-status-service/configs -t /tmp/test-net -p 54.169.140.0 -k ~/Working/Deevo/pem/dev-full-rights.pem -g "org0 org1 org2 org3 org4 org5"

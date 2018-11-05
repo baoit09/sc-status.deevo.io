@@ -1,6 +1,6 @@
 const appRoot = require('app-root-path');
 const fabricHelper = require(__dirname + '/../fabricClient/fabricHelper');
-const grpc = require(`${appRoot}/node_modules/fabric-client/node_modules/grpc`);
+const grpc = require(`${appRoot}/node_modules/grpc`);
 
 const _serviceProto = grpc.load(
     `${appRoot}/node_modules/fabric-client/lib/protos/peer/admin.proto`
