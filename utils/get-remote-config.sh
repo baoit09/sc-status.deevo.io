@@ -112,11 +112,11 @@ for channel in $c; do
 	echo "
   ${channel}: # name of channel
     orderers:
-      - orderer1.org0.deevo.io
+      - orderer0.org0.deevo.io
     peers:" >>${CONFIG_PATH}/fabric-network-config/connection-profile.yaml
 	for org in $ORGS; do
 		if [ "${org}" != "org0" ]; then
-			echo "      peer1.${org}.deevo.io:
+			echo "      peer0.${org}.deevo.io:
         endorsingPeer: true
         chaincodeQuery: true
         ledgerQuery: true
@@ -131,7 +131,7 @@ for org in $ORGS; do
 	echo "  ${org}:
     mspid: ${org}MSP
     peers: 
-      - peer1.${org}.deevo.io
+      - peer0.${org}.deevo.io
     certificateAuthorities:
       - rca.${org}.deevo.io
     adminPrivateKey:
@@ -141,10 +141,10 @@ for org in $ORGS; do
 done
 echo "
 orderers:
-  orderer1.org0.deevo.io:
-    url: grpcs://orderer1.org0.deevo.io:7050
+  orderer0.org0.deevo.io:
+    url: grpcs://orderer0.org0.deevo.io:7050
     grpcOptions:
-      ssl-target-name-override: orderer1.org0.deevo.io
+      ssl-target-name-override: orderer0.org0.deevo.io
       grpc-keepalive-timeout-ms: 3000
       grpc.keepalive_time_ms: 360000
       grpc-max-send-message-length: 10485760
@@ -154,11 +154,11 @@ orderers:
 peers:" >>${CONFIG_PATH}/fabric-network-config/connection-profile.yaml
 for org in $ORGS; do
 	if [ "${org}" != "org0" ]; then
-		echo "  peer1.${org}.deevo.io:
-    url: grpcs://peer1.${org}.deevo.io:7051
-    eventUrl: grpcs://peer1.${org}.deevo.io:7053
+		echo "  peer0.${org}.deevo.io:
+    url: grpcs://peer0.${org}.deevo.io:7051
+    eventUrl: grpcs://peer0.${org}.deevo.io:7053
     grpcOptions:
-      ssl-target-name-override: peer1.${org}.deevo.io
+      ssl-target-name-override: peer0.${org}.deevo.io
       grpc.keepalive_time_ms: 600000
     tlsCACerts:
       path: configs/crypto-config/orgs/${org}/msp/tlscacerts/tls-rca-${org}-deevo-io-7054.pem" >>${CONFIG_PATH}/fabric-network-config/connection-profile.yaml
