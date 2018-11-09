@@ -127,7 +127,16 @@ done
 
 echo "
 organizations:" >>${CONFIG_PATH}/fabric-network-config/connection-profile.yaml
+echo "  org0:
+    mspid: org0MSP
+    certificateAuthorities:
+      - rca.org0.deevo.io
+    adminPrivateKey:
+      path: configs/crypto-config/orgs/org0/admin/tls/server.key
+    signedCert:
+      path: configs/crypto-config/orgs/org0/admin/tls/server.crt" >>${CONFIG_PATH}/fabric-network-config/connection-profile.yaml
 for org in $ORGS; do
+  if [ "${org}" != "org0" ]; then
 	echo "  ${org}:
     mspid: ${org}MSP
     peers: 
@@ -138,6 +147,7 @@ for org in $ORGS; do
       path: configs/crypto-config/orgs/${org}/admin/tls/server.key
     signedCert:
       path: configs/crypto-config/orgs/${org}/admin/tls/server.crt" >>${CONFIG_PATH}/fabric-network-config/connection-profile.yaml
+  fi
 done
 echo "
 orderers:
